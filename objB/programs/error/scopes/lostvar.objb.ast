@@ -1,0 +1,4 @@
+[Proc TNumber "main" [] 
+    [ Braced [Define TNumber "x" (Constant (VNumber 0)), EndBrace]
+    , Return (Variable "x")]
+]

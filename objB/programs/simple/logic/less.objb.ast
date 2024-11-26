@@ -1,0 +1,2 @@
+[(Proc TBoolean "main" [] 
+    [(Return (Operation Less (Constant (VNumber 0)) (Constant (VNumber 1))))])]

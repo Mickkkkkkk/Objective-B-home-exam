@@ -1,0 +1,7 @@
+integer main() {
+    integer i = 0;
+    # Should occur an error here
+    while i < 5 
+        i = i + 1;
+    return i
+}

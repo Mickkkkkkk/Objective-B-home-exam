@@ -1,0 +1,5 @@
+[(Proc TNumber "main" [] [(Return 
+                            (Operation Mult 
+                                (Constant (VNumber (-1))) 
+                                (Constant (VNumber 3))))])
+]

@@ -1,0 +1,5 @@
+integer main() {
+    # void should not be overwritten
+    integer void = 0;
+    return i
+}

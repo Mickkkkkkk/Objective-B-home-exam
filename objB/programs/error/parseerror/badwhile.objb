@@ -1,0 +1,6 @@
+integer main() {
+    integer i = 0;
+    # Should occur an error here, as there are no braces nor spaces
+    while i < 5i = i + 1;
+    return i
+}

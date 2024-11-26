@@ -1,0 +1,24 @@
+# not really an algorithm, but whatever
+integer main (integer n) {
+    if n == 1
+    then return 1
+    else {
+        integer evenOdd =  mod(n, 2);
+        if evenOdd == 0
+        then return main(n/2)
+        else return main(3*n + 1)
+    }
+}
+
+boolean leq (integer m, integer n) {
+    return (m < n || m == n)
+}
+
+integer mod (integer n, integer m){
+    if leq(m, 0) 
+    then return n/0
+    else
+        while leq(m, n) 
+            n = n - m;
+        return n
+}

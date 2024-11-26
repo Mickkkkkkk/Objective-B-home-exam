@@ -1,0 +1,7 @@
+[(Proc TVoid "main" [] 
+    [ (Define TNumber "i" (Constant (VNumber 0)))
+    , (Execute (Variable "i"))
+    , (Mutate "i" (Constant (VNumber 1)))
+    , Skip
+    , While (Operation Less (Variable "i") (Constant (VNumber 3)))
+            (Mutate "i" (Operation Plus (Variable "i") (Constant (VNumber 3))))])]

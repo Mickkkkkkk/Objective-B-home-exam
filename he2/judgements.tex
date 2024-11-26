@@ -1,0 +1,40 @@
+
+\def\Name{\ensuremath{\text{\bf Name}}}
+\def\OR{\ensuremath{\ |\ }}
+\def\TO{\ensuremath{\rightarrow}}
+\def\FROM{\ensuremath{\leftarrow}}
+\def\LB{\ensuremath{\llbracket}}
+\def\RB{\ensuremath{\rrbracket}}
+\newcommand\semanticbracket[1]{\ensuremath{\LB{#1}\RB}}
+\newcommand\LIT[1]{\ensuremath{\text{\tt #1}}}
+
+\newcommand \BX [1]
+  {\scriptsize\framebox{{\raisebox{0pt}[0.7\baselineskip][0.01\baselineskip]{\small #1}}}}
+
+\newcommand\Axiom[2]
+                 {\ensuremath{\text{\small #1}:\frac{\displaystyle}
+                 {\displaystyle #2}}
+                 }
+\newcommand\InfOne[3]
+                 {\ensuremath{\text{\small #2}:\frac{\displaystyle #1}
+                 {\displaystyle #3}}
+                 }
+\newcommand\InfTwo[4]
+                 {\ensuremath{\text{\small #3}:\frac{\displaystyle #1 \quad #2}
+                 {\displaystyle #4}}
+                 }
+\newcommand\InfThree[5]
+                 {\ensuremath{\text{\small #4}:
+                     \frac{\displaystyle #1 \quad #2 \quad #3}
+                          {\displaystyle #5}}
+                 }
+\newcommand\InfFour[6]
+                 {\ensuremath{\text{\small #5}:
+                     \frac{\displaystyle #1 \quad #2 \quad #3 \quad #4}
+                          {\displaystyle #6}}
+                 }
+\newcommand\InfFive[7]
+                 {\ensuremath{\text{\small #6}:
+                     \frac{\displaystyle #1 \quad #2 \quad #3 \quad #4 \quad #5}
+                          {\displaystyle #7}}
+                 }

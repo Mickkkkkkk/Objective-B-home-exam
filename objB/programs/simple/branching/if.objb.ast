@@ -1,0 +1,3 @@
+[ (Proc TNumber "main" [] 
+    [(If (Constant (VBoolean False)) Skip (Return (Constant (VNumber 0))))])
+]

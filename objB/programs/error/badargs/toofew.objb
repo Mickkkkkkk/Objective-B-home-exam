@@ -1,0 +1,8 @@
+integer sumThree (integer x, integer y, integer z) {
+    return x+y+z
+}
+
+integer main () {
+    # sumThree expects 3 arguments
+    return sumThree(1,2)
+}

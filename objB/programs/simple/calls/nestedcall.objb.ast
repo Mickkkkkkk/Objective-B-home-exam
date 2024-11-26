@@ -1,0 +1,4 @@
+[ (Proc TNumber "one" [] [(Return (Call "one2" []))]),
+  (Proc TNumber "one2" [] [(Return (Constant (VNumber 1)))]),
+  (Proc TNumber "main" [] [(Return (Call "one" [])), Skip])
+]

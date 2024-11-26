@@ -1,0 +1,17 @@
+integer main(integer n) {
+    return fib(n)
+}
+
+integer fib(integer n) {
+    if (n == 0) 
+    then {
+        return 0
+    } else {
+        if (n == 1) 
+        then {
+            return 1
+        } else {
+            return (fib(n-1) + fib(n-2))
+        }
+    }
+}

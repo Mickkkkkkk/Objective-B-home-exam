@@ -1,0 +1,3 @@
+[ Proc TNumber "main" [] 
+    (Operation Plus (Constant (VNumber 1)), (Constant (VBoolean True)))
+]

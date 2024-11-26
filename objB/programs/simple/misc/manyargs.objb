@@ -1,0 +1,3 @@
+integer main (integer i1, integer i2, integer i3) {
+    return i1 + i2 + i3
+}

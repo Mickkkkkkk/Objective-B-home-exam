@@ -1,0 +1,7 @@
+void sumThree (integer x, integer y, integer z) {
+    return x+y+z
+}
+
+integer main () {
+    return sumThree(1,2,3)
+}

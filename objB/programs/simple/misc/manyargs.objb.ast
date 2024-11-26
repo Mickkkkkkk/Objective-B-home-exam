@@ -1,0 +1,1 @@
+[Proc TNumber "main" [(TNumber,"i1"),(TNumber,"i2"),(TNumber,"i3")] [Return (Operation Plus (Operation Plus (Variable "i1") (Variable "i2")) (Variable "i3"))]]

@@ -1,0 +1,64 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           objB
+version:        0.0.0
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Syntax
+      Parser
+      Interpreter
+  other-modules:
+      Paths_objB
+  hs-source-dirs:
+      src
+  ghc-options: -W
+  build-depends:
+      base
+    , containers
+    , parsec
+  default-language: Haskell2010
+
+executable objB
+  main-is: Main.hs
+  other-modules:
+      Interpreter
+      Parser
+      Syntax
+      Paths_objB
+  hs-source-dirs:
+      src
+      app
+  build-depends:
+      base
+    , containers
+    , parsec
+  default-language: Haskell2010
+
+test-suite my-test-suite
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  other-modules:
+      AuxiliaryFuncs
+      InterpreterTests
+      ParseAndInterpretTests
+      ParserTests
+      Paths_objB
+  hs-source-dirs:
+      test
+  build-depends:
+      base
+    , containers
+    , objB
+    , parsec
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+  default-language: Haskell2010

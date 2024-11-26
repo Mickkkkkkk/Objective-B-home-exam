@@ -1,0 +1,7 @@
+[ (Proc TVoid "main" [] 
+    [ (Execute (Call "print" [(Constant (VNumber 1))]))
+    , (Execute (Call "printer" []))
+    , (Execute (Call "print" [(Constant (VNumber 0))]))
+    , (Execute (Call "print" [(Constant (VNumber 1))]))])
+, (Proc TVoid "printer" [] 
+    [ (Execute (Call "print" [Constant (VNumber 0)])) ])]

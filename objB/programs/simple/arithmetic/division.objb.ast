@@ -1,0 +1,1 @@
+[(Proc TNumber "main" [] [(Return (Operation Div (Constant (VNumber 6)) (Constant (VNumber (-2)))))])]

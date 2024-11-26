@@ -1,0 +1,6 @@
+[ Proc TNumber "sumThree" [(TNumber, "x"), (TNumber, "y"), (TNumber, "z")] 
+    [Return (Operation Plus (Operation Plus (Variable "x") (Variable "y")) (Variable "z"))]
+
+, Proc TNumber "main" [] 
+    [Return (Call "sumThree" [(Constant (VNumber 1)), (Constant (VNumber 2))])]
+]

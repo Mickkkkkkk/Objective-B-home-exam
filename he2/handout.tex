@@ -1,0 +1,340 @@
+%!TEX options=--shell-escape
+
+\documentclass[fleqn,10pt]{olplainarticle}
+
+\usepackage{hyperref}             % Clickable links
+\usepackage{todonotes}            % Notes in margin
+\usepackage{tikz}                 % Engraving figures
+\usepackage[english]{babel}       % The theorem environment need something from here!
+\usepackage{minted}               % A better verbatim.
+\usepackage{enumitem}             % Resuming enumerations.
+\usepackage{amsmath}              % Includes `\ensuremath` and friends.
+\usepackage{amssymb}              % Symbols such as `\downarrow`.
+\usepackage{stmaryrd}             % Symbols such as `\llbracket`.
+\usepackage[nameinlink]{cleveref} % Better cross-referencing.
+\usepackage{cite}                 % Citations.
+
+% Additional macros.
+\input{judgements}                % Judgement rules.
+\renewcommand{\ref}[1]{\Cref{#1}} % Uses `cleverref` as ref.
+
+% Use this macro instead of the language name.
+% competing names are
+% - CobraClass
+% - Objective B.
+% - HissScript.
+% - BoaClass.
+% - BoaByte (a byte code language for Boa)?
+% - Boa++.
+% - ViperScript.
+% - NodeBoa.
+
+\def\lang{Objective B}
+
+\title{Implementing \lang}
+
+\author[0]{Programming Language Implementation and Formalisation (Spring 2024)}
+
+\begin{abstract}
+The Cobra Cooperation has been receiving numerous error reports regarding
+their imperative dynamically typed programming language, Boa. The primary
+issue seems to stem from a lack of proper code structure and absence of a
+type system, resulting in an increased number of errors. To address these
+concerns, the Cobra Cooperation has initiated the development of a new
+language, \lang, with the aim of resolving these issues and providing a more
+efficient and error-free programming experience. In this assignment, you
+will explore the design and features of \lang{ }and analyze the potential
+impact it may have on the programming community. Additionally, you will have
+the opportunity to propose potential improvements or additional features for
+the language. Let's get started!
+\end{abstract}
+
+\begin{document}
+
+\flushbottom
+\maketitle
+\thispagestyle{empty}
+
+\section*{Syntax}
+
+The goal of this assignment is to gain experience in implementing a
+programming language from its formalisation. You will be implementing a
+parser and interpreter for the \lang~programming language, for which you
+will find the concrete syntax is defined by the BNF in
+Figure~\ref{fig:syntax}.
+
+\def\prog{\ensuremath{\mathbb{P}}}
+\def\proc{\text{p}}
+\def\type{\ensuremath{\tau}}
+\def\exp{\text{e}}
+\def\val{\text{v}}
+\def\stmt{\text{s}}
+\def\op{\ensuremath{\oplus}}
+\newcommand\curlies[1]{\LIT{\{}#1\LIT{\}}}
+
+\newcommand\IF[3]{\ensuremath{\LIT{if}~{#1}~\LIT{then}~{#2}~\LIT{else}~#3}}
+\newcommand\ASS[3]{\ensuremath{#1~#2~\LIT{=}~#3}}
+\newcommand\WHILE[2]{\ensuremath{\LIT{while}~#1~#2}}
+\newcommand\RETURN[1]{\ensuremath{\LIT{return}~#1}}
+\newcommand\PRINT[1]{\ensuremath{\LIT{print}(#1)}}
+\newcommand\SEQ[2]{\ensuremath{#1~\LIT{;}~#2}}
+\newcommand\APP[2]{\ensuremath{#1\LIT{(}#2\LIT{)}}}
+
+\begin{figure}[ht!]
+\begin{center}
+\begin{align*}
+  f, x &\in \Name   &\text{(Well-formed identifiers).}\\
+  i, j &\in \mathbb{Z}                                      &\text{(Integers)}\\
+\prog &:= \proc^*                                           &\text{(Programs)}\\
+\proc &:= \type~f\LIT{(}\type_i~ x_i\LIT{)} \curlies{\stmt} &\text{(Procedures)}\\
+\type &:= \LIT{integer}                                     &\text{(Primitive Types)}\\
+      &\OR ~ \LIT{boolean}\\
+      &\OR ~ \LIT{void}\\
+\val  &:=  \LIT{true} \OR \LIT{false} \OR i \OR \LIT{null} &\text{(Simple values)}\\
+\stmt &:=  \LIT{\{} \stmt \LIT{\}}                         &\text{(Statements)}\\
+      &\OR ((\type)^?~x~\LIT{=})^?~\exp\\
+      &\OR \IF{\exp}{\stmt_1}{\stmt_2}\\
+      &\OR \WHILE{\exp}{\stmt}\\
+      &\OR \RETURN{\exp}\\
+      &\OR \SEQ{\stmt_1}{\stmt_2}\\
+      &\OR \epsilon                                        &\text{(The empty statement)}\\
+\exp  &:= \LIT{(} \exp \LIT{)}                             &\text{(Expressions)}\\
+      %% &\OR \PRINT{\exp}\\
+      &\OR \APP{f}{\exp_i}\\
+      &\OR \exp_1 \op \exp_2\\
+      &\OR \LIT{!} \exp\\
+      &\OR x\\
+      &\OR \val\\
+\op   &:= \LIT{+}
+       \OR \LIT{-}
+       \OR \LIT{*}
+       \OR \LIT{/}
+       \OR \LIT{==}
+       \OR \LIT{<}
+       \OR \LIT{\&\&}
+       \OR \LIT{||}                                        &\text{(Binary operators)}
+\end{align*}
+\end{center}
+\vspace{-4mm}
+\caption{The syntax of \lang. The star ($\odot^*$) denotes a sequence
+  containing $0$ or more occurences. and the questionmark ($\odot^?$)
+  denotes choice (zero or one), and the subscript ($\odot_i$) denotes a
+  comma separated sequence containing zero or more indexable entities
+  ($\odot_0, \odot_1, \dots, \odot_n$).}
+\label{fig:syntax}
+\end{figure}
+
+A program \prog, consists of zero or more procedures, and a procedure is
+defined by specifying its return type and name, followed by a list of
+arguments and a statement. We will cover types and statements in more detail
+later, but first, here are a couple of example procedures
+
+\begin{minted}{text}
+boolean isEven(integer n) {
+  if   n == 0
+  then return true
+  else return isOdd(n - 1)
+}
+
+boolean isOdd(integer n) {
+  if   n == 0
+  then return false
+  else return isEven (n - 1)
+}
+
+boolean isPrime(integer n){
+  integer i = 2 ;
+  while (i < n) {
+    if (n / i) * i == n
+    then return false
+    else i = i + 1
+  } ;
+  return true
+}
+\end{minted}
+
+As you may have noticed, the main part of a procedure is its statement.
+To avoid syntactic ambiguity, statements can be grouped by curly braces.
+For instance, the statement
+
+\begin{minted}{text}
+{ while e s1 } ; s2
+\end{minted}
+
+\noindent will run the statement \LIT{s1} until \LIT{e} holds, and then it will run
+\texttt{s2} once. Whereas
+
+\begin{minted}{text}
+while e { s1 ; s2 }
+\end{minted}
+
+\noindent will run the statement \texttt{s1 ; s2} until \texttt{e} holds. Furthermore
+a statement can be empty, and this is just to accomodate any leading or
+trailing statement composiiton operators \SEQ{\stmt_1}{\stmt_2}.
+
+\section*{semantics}
+
+\def\src{\ensuremath{\pi}}
+\def\state{\ensuremath{\sigma}}
+
+\newcommand\runRWS[2]{\ensuremath{\langle #1 \rangle \downarrow \langle #2 \rangle}}
+\newcommand\updatesState[3]{\ensuremath{\runRWS{\src, #1, #2}{ #3}}}
+
+\newcommand\eval[2]{\runRWS{\src, \state, #1}{#2}}
+\newcommand\lookup[3]{\runRWS{\src, #1, #2}{#3}}
+
+A \lang~program must contain a procedure called \LIT{main}, and the
+semantics of running a program, is to call \LIT{main} with its supplied
+arguments. It is up to you to decide what those parameters should be, but
+you must state your choice clearly in the report.
+
+A procedure runs in the context of a source program \src, and a state
+\state, containing the variable bindings currently in scope.
+
+There are two evaluation judgements: An evaluation judgement for expressions
+\eval{\exp}{\val} in which an expression evaluates to a value.
+And, a judgement for statements, \runRWS{\src, \state_1, \stmt}{\val,
+  \state_2}, in which a statement computes a value, and possibly changes the
+state.
+%
+You can find the judgements for expressions and statements in
+Figures~\ref{fig:evaluation-for-expressions} and
+\ref{fig:evaluation-for-statements} respectively.
+
+\begin{figure}[ht!]
+  \begin{flushleft}
+    \fbox{\runRWS{\src, \state, \exp}{\val}}
+  \end{flushleft}
+\begin{center}
+  \Axiom
+  {Variable}        % -------------------------------------
+                    {\lookup{\state[x \mapsto v]}{x}{v}}
+  \quad
+  \Axiom
+  {Value}           % -------------------------------------
+                    {\eval{\val}{\val}}
+  \\\vspace{3mm}
+  \InfTwo           {\eval{\exp_i}{\val_i}}
+                    {\runRWS{\src, [x_i \mapsto \val_i], \stmt}{\val, \state'}}
+  {Call}            % -------------------------------------
+                    {\runRWS{\src[\type f (\type_i, x_i) \curlies{\stmt}], \state
+                                 , \APP{f}{\exp_i}}{\val}}
+  \\\vspace{3mm}
+  \InfOne           {\eval{\exp_1}{\LIT{true}}}
+  {Not-True}        % -------------------------------------
+                    {\eval{\LIT{!}\exp_1}{\LIT{false}}}
+  \quad
+  \InfOne           {\eval{\exp_1}{\LIT{false}}}
+  {Not-False}       % -------------------------------------
+                    {\eval{\LIT{!}\exp_1}{\LIT{true}}}
+  \\\vspace{3mm}
+  \InfTwo           {\eval{\exp_1}{\val_1}}
+                    {\eval{\exp_2}{\val_2}}
+  {Operation}       % -------------------------------------
+                    {\eval{\exp_1 \op \exp_2}{\val}}
+                    \hspace{-2mm}$(\val_1 \op \val_2 = \val)$
+\end{center}
+\vspace{-4mm}
+\caption{}
+\label{fig:evaluation-for-expressions}
+\end{figure}
+
+\begin{figure}[ht!]
+  \begin{flushleft}
+    \fbox{\runRWS{\src, \state_1, \exp}{\val, \state_2}}
+  \end{flushleft}
+\begin{center}
+  \Axiom
+  {Skip}            % -------------------------------------
+                    {\runRWS{\src, \state, \epsilon}{\LIT{null}, \state}}
+  \quad
+  \InfOne           {\runRWS{\src, \state, \exp}{\val}}
+  {Expression}      % -------------------------------------
+                    {\runRWS{\src, \state, \exp}{\val, \state}}
+  \quad
+  \\\vspace{3mm}
+  \InfOne           {\runRWS{\src, \state, \exp}{\val}}
+  {AssignNew}       % -------------------------------------
+                    {\runRWS{\src, \state, \type~x = \exp}{\val, \state[x \mapsto v]}}
+  \quad
+  \InfOne           {\runRWS{\src, \state, \exp}{\val}}
+  {AssignOld}       % -------------------------------------
+                    {\runRWS{\src, \state[x \mapsto w], x = \exp}{\val, \state[x \mapsto \val]}}
+  \\\vspace{3mm}
+  \InfTwo           {\runRWS{\src, \state_1, \exp}{\LIT{true}}}
+                    {\runRWS{\src, \state_1, \stmt_1}{\val, \state_2}}
+  {If-True}         % -------------------------------------
+                    {\runRWS{\src, \state_1, \IF{\exp}{\stmt_1}{\stmt_2}}{\val, \state_2}}
+  \\\vspace{3mm}
+  \InfTwo           {\runRWS{\src, \state_1, \exp}{\LIT{false}}}
+                    {\runRWS{\src, \state_1, \stmt_2}{\val, \state_2}}
+  {If-False}        % -------------------------------------
+                    {\runRWS{\src, \state_1, \IF{\exp}{\stmt_1}{\stmt_2}}{\val, \state_2}}
+  \\\vspace{3mm}
+  \InfThree         {\runRWS{\src, \state_1, \exp}{\LIT{true}}}
+                    {\runRWS{\src, \state_1, \stmt}{\val_1, \state_2}}
+                    {\runRWS{\src, \state_2, \WHILE{\exp}{\stmt}}{\val_2, \state_3}}
+  {While-True}      % -------------------------------------
+                    {\runRWS{\src, \state_1, \WHILE{\exp}{\stmt}}{\val_2, \state_3}}
+  \\\vspace{3mm}
+  \InfOne           {\runRWS{\src, \state, \exp}{\LIT{false}}}
+  {While-False}     % -------------------------------------
+                    {\runRWS{\src, \state, \WHILE{\exp}{\stmt}}{\LIT{null}, \state}}
+  \quad
+  \InfTwo           {\runRWS{\src, \state,   \stmt_1}{\val_1, \state_1}}
+                    {\runRWS{\src, \state_1, \stmt_2}{\val_2, \state_2}}
+  {Sequence}        % -------------------------------------
+                    {\runRWS{\src, \state, \SEQ{\stmt_1}{\stmt_2}}{\val_2, \state_2}}
+\end{center}
+\vspace{-4mm}
+\caption{}
+\label{fig:evaluation-for-statements}
+\end{figure}
+
+% While will always return null
+% Why do statements return a value if they can't be used as expressions?
+    % Maybe for calls on functions that don't have an explicit return?
+% Alternatively: Have all statements except return evaluate to the value null
+
+\section*{Your task}
+
+The board of Cobra Cooperation has requested that you write a prototype
+interpreter for \lang. That is, your task is to initiate a \texttt{stack}
+project, it could be called \texttt{objective-b}, and design and implement a
+data structure and parser for the abstract syntax of \lang. Then you are
+asked to write an interpreter for \lang. The choice is yours, and you can
+take inspiration from \texttt{Boa} language. You should hand in a report
+together with your code, describing the choices you made.
+
+The board has a list of questions that you should answer in the report, and
+a list of optional questions below.
+
+\subsection*{Questions}
+\begin{enumerate}
+  \item Figure~\ref{fig:evaluation-for-statements} does not specify a
+    semantics for the \texttt{return} statement. Suggest a judgement rule
+    for \texttt{return} and include it in your implementation. Does your
+    semantics for \texttt{return} affect the other judgements in
+    Figure~\ref{fig:evaluation-for-statements}. If so, explain how your
+    changes propagate.
+  \item Cobra Cooperation has not yet designed a type system for \lang.
+    Suggest a judgement form for typing expressions, and give two interesting example rules.
+  \item How would you asses the current state of your prototype? How
+    confident are you that the prototype is correct? What needs improvement
+    in a production-ready interpreter?
+\end{enumerate}
+
+\subsection*{Challenges}
+\begin{enumerate}
+  \item \texttt{Boa} had a print expression. Extend your semantics with
+    \texttt{print} and describe the choices you made. What happens to the
+    evaluation rule for expressions?
+  \item It is customary for procedural languages to provide a means of
+    passing values between procedures. Extend the syntax of \lang~to
+    accommodate pointers, implement pointers in your code.
+  \item Extend \lang~with arrays.
+  \item Extend \lang~with objects. What happens to your type system?
+\end{enumerate}
+
+\end{document}
+

@@ -1,0 +1,3 @@
+[ (Proc TVoid "main" [] 
+    [(Braced [(Braced [(Return (Constant VNull)), EndBrace]), EndBrace])]) 
+]

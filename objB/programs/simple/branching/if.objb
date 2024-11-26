@@ -1,0 +1,4 @@
+# empty then-branch for extra spice
+integer main() {
+    if false then else return 0
+}

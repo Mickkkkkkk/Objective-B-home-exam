@@ -1,0 +1,44 @@
+# A program which given an m and n, sums up
+# the greatest common divisors between
+# m and n, n-1, n-2, ..., 1 which are greater than 1.
+# It also prints out a sequence of numbers. They are
+# to be read as pairs, where the first number prints the
+# value for n-i, and the other the gcd for m and n-i.
+# Sadly, since strings are not a part of Objective B,
+# we can't print newlines and such to make it prettier.
+
+integer main(integer m, integer n) {
+    integer sum = 0;
+    if (n < 1) 
+    then return -1
+    else 
+    while (1 < n) {
+        integer grcmdv = gcd(m, n);
+        if ! leq(grcmdv, 1)
+        then {sum = sum + grcmdv; print(n); print(grcmdv)}
+        else;
+        n = n - 1;
+    };
+    return sum;
+}
+
+integer gcd(integer m, integer n) {
+    if n == 0 
+    then return m 
+    else return gcd(n, mod(m, n)) 
+}
+
+boolean leq (integer m, integer n) {
+    return (m < n || m == n)
+}
+
+integer mod (integer n, integer m){
+    if leq(m, 0) 
+    then return n/0
+    else {
+        while leq(m, n) { 
+            n = n - m;
+        };
+        return n;
+    }
+}

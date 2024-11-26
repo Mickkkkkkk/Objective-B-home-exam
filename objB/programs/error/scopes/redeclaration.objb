@@ -1,0 +1,12 @@
+integer main () {
+  integer i=0; 
+  integer i = 1; 
+  {
+    integer x = 1; 
+    {
+      x = x + 1; 
+      return i + x
+    }
+  }; 
+  return i
+}

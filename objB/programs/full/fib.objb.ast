@@ -1,0 +1,17 @@
+[(Proc TNumber "main" [(TNumber, "n")] 
+    [(Return (Call "fib" [(Variable "n")]))]),
+  (Proc TNumber "fib" [(TNumber, "n")]
+    [(If (Operation Eq (Variable "n") (Constant (VNumber 0)))
+         (Return (Constant (VNumber 0)))
+         (If (Operation Eq (Variable "n") (Constant (VNumber 1)))
+             (Return (Constant (VNumber 1)))
+             (Return (Operation Plus
+                        (Call "fib" 
+                                [(Operation Minus
+                                           (Variable "n")
+                                           (Constant (VNumber 1)))])
+                        (Call "fib" 
+                                [(Operation Minus
+                                           (Variable "n")
+                                           (Constant (VNumber 2)))])))))])
+]

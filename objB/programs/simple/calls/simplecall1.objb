@@ -1,0 +1,2 @@
+integer one () {return 1}
+integer main () {return one();}

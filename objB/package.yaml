@@ -1,0 +1,34 @@
+name: objB
+
+dependencies:
+  - base       # (built-in functions such as `length`).
+  - containers # (structures such as Data.Map).
+  - parsec
+
+# The Boa Library.
+library:
+  source-dirs: src
+  ghc-options:
+    - -W
+  exposed-modules:
+    - Syntax
+    - Parser
+    - Interpreter
+
+# A minimal driver program.
+executable:
+  source-dirs:
+    - src
+    - app
+  main: Main.hs
+
+# Your test suite.
+tests:
+  my-test-suite:
+    main: Test.hs
+    source-dirs: test
+    dependencies:
+      - objB
+      - tasty
+      - tasty-hunit
+      - tasty-quickcheck

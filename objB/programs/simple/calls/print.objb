@@ -1,0 +1,2 @@
+void main () {print (1); printer(); print(0); print(1)}
+void printer () {print(0)}

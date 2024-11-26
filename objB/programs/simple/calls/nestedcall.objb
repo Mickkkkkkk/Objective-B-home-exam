@@ -1,0 +1,3 @@
+integer one () {return one2()}
+integer one2() {return 1}
+integer main () {return one();}

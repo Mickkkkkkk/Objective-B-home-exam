@@ -1,0 +1,7 @@
+[ Proc TNumber "sumThree" [(TNumber, "x"), (TNumber, "y"), (TNumber, "z")] 
+    [Return (Constant (VBoolean True))]
+
+, Proc TNumber "main" [] 
+    [Return (Call "sumThree" [(Constant (VNumber 1)), (Constant (VNumber 2)), 
+                              (Constant (VNumber 3))])]
+]

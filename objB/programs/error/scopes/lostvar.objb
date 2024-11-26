@@ -1,0 +1,4 @@
+integer main() {
+    {integer x = 0};
+    return x
+}

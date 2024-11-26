@@ -1,0 +1,10 @@
+[ (Proc TNumber "main" [] 
+    [ Define TNumber "i" (Constant (VNumber 0))
+    , Define TNumber "i" (Constant (VNumber 1))
+    , (Braced [ Define TNumber "x" (Constant (VNumber 1)) 
+              , (Braced [ Mutate "x" (Operation Plus (Variable "x") (Constant (VNumber 1)))
+                        , Return (Operation Plus (Variable "i") (Variable "x"))
+                        , EndBrace])
+              , EndBrace])
+    , Return (Variable "i")]) 
+]

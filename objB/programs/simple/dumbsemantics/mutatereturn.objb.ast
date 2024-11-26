@@ -1,0 +1,4 @@
+[(Proc TNumber "main" [] 
+    [ (Define TNumber "i" (Constant (VNumber 0)))
+    , (Execute (Variable "i"))
+    , (Mutate "i" (Constant (VNumber 1)))])]

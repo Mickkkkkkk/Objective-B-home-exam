@@ -1,0 +1,5 @@
+[(Proc TBoolean "main" [] 
+    [(Return (Operation And 
+                (Operation And (Constant (VBoolean True)) (Constant (VBoolean False)))
+                (Constant (VBoolean False))))])
+]
